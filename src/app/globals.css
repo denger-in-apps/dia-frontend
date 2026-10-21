@@ -1,0 +1,60 @@
+@import "tailwindcss";
+
+:root {
+  --bg: #fbf3e8;            /* krem */
+  --surface: #ffffff;
+  --text: #1c1840;
+  --text-muted: #5b5778;
+  --brand: #2a1f5e;         /* ungu tua (kartu psikolog/CTA) */
+  --brand-foreground: #ffffff;
+  --accent-lime: #d9f26b;   /* limau (Cek Mandiri/latar promosi) */
+  --accent-mint: #bfeadb;   /* mint (Booking Konseling) */
+  --accent-lavender: #e1d3f7; /* lavender (Circle) */
+  --danger: #d92b2b;        /* HANYA untuk SOS/Genta & error kritis */
+  --focus: #5b3df5;
+  --radius: 20px;
+}
+
+:root[data-theme='dark'], [data-theme='dark'], .dark {
+  --bg: #12102a;
+  --surface: #1c1840;
+  --text: #f4f1ff;
+  --text-muted: #b7b1d6;
+  --brand: #8f7bff;
+  --brand-foreground: #12102a;
+  --focus: #b6a8ff;
+}
+
+@theme inline {
+  --color-bg: var(--bg);
+  --color-surface: var(--surface);
+  --color-text: var(--text);
+  --color-text-muted: var(--text-muted);
+  --color-brand: var(--brand);
+  --color-brand-foreground: var(--brand-foreground);
+  --color-accent-lime: var(--accent-lime);
+  --color-accent-mint: var(--accent-mint);
+  --color-accent-lavender: var(--accent-lavender);
+  --color-danger: var(--danger);
+  --color-focus: var(--focus);
+  --radius-custom: var(--radius);
+}
+
+body {
+  background-color: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  margin: 0;
+  padding: 0;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+}
+
+:focus-visible {
+  outline: 2px solid var(--focus);
+  outline-offset: 2px;
+}
+
+/* Safe area insets for mobile */
+.safe-bottom {
+  padding-bottom: env(safe-area-inset-bottom, 1rem);
+}
