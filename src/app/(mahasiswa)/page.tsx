@@ -2,6 +2,7 @@ import Link from "next/link";
 import { Sparkles, MessageSquareHeart, Users, CalendarHeart, ShieldCheck, ArrowRight, Heart } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { PwaInstallPrompt } from "@/components/pwa/PwaInstallPrompt";
 
 export default function BerandaPage() {
   const options = [
@@ -45,6 +46,8 @@ export default function BerandaPage() {
 
   return (
     <div className="space-y-12 pb-16">
+      <PwaInstallPrompt />
+
       {/* Hero Section */}
       <section className="text-center max-w-2xl mx-auto pt-6 space-y-4">
         <div className="inline-flex items-center gap-1.5 px-4 py-1.5 rounded-full bg-surface border border-black/5 dark:border-white/10 text-xs font-semibold text-text-muted">

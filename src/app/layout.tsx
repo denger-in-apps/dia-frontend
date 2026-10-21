@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import "./globals.css";
 import { Providers } from "@/components/providers/Providers";
+import { PwaRegister } from "@/components/pwa/PwaRegister";
 
 export const metadata: Metadata = {
   title: "Denger.in — Ruang Aman Mahasiswa Didengar",
@@ -27,6 +28,7 @@ export default function RootLayout({
     <html lang="id" suppressHydrationWarning>
       <body className="antialiased min-h-screen bg-bg text-text">
         <Providers>
+          <PwaRegister />
           {children}
         </Providers>
       </body>

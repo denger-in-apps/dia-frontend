@@ -1,12 +1,14 @@
 {
-  "name": "Denger.in",
+  "name": "Denger.in — Ruang Aman Mahasiswa Didengar",
   "short_name": "Denger.in",
-  "description": "Layanan Konseling dan Dukungan Mental Mahasiswa",
+  "description": "Layanan Konseling, Curhat Anonim, dan Dukungan Mental Mahasiswa Kampus",
   "start_url": "/",
+  "scope": "/",
   "display": "standalone",
   "background_color": "#fbf3e8",
   "theme_color": "#2a1f5e",
-  "orientation": "portrait",
+  "orientation": "portrait-primary",
+  "categories": ["health", "education", "lifestyle"],
   "icons": [
     {
       "src": "/icon-192.png",
