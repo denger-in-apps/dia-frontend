@@ -1,1 +1,2 @@
-# dia-frontenda
+# dia-frontend
+ubah README.md untuk keperluan praktikum
