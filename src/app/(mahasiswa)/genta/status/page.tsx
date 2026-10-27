@@ -3,6 +3,7 @@
 import { useState, useEffect, Suspense } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import { SosStatusCard } from "@/components/genta/SosStatusCard";
+import { GentaIntentCheck } from "@/components/genta/GentaIntentCheck";
 
 function GentaStatusContent() {
   const searchParams = useSearchParams();
@@ -41,8 +42,8 @@ function GentaStatusContent() {
         waktuBuat="Baru saja"
         kategori="Panik / Butuh Pertolongan"
         psikologNama={psikologNama}
-        onBatal={handleBatal}
       />
+      <GentaIntentCheck onCancelSignal={handleBatal} />
     </div>
   );
 }
