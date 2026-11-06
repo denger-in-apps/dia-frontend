@@ -1,3 +1,4 @@
+
 "use client";
 
 import {
@@ -50,22 +51,48 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<AuthProfile | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
-  const loadSession = useCallback(async () => {
-    try {
-      await refreshOnce();
+  const loadSession = useCallback(
+    async (isActive: () => boolean) => {
+      try {
+        await refreshOnce();
 
-      const profile = await getAuthProfile();
-      setUser(profile);
-    } catch {
-      clearAccessToken();
-      setUser(null);
-    } finally {
-      setIsLoading(false);
-    }
-  }, []);
+        if (!isActive()) return;
+
+        const profile = await getAuthProfile();
+
+        if (!isActive()) return;
+
+        setUser(profile);
+      } catch {
+        if (!isActive()) return;
+
+        clearAccessToken();
+        setUser(null);
+      } finally {
+        if (isActive()) {
+          setIsLoading(false);
+        }
+      }
+    },
+    []
+  );
 
   useEffect(() => {
-    void loadSession();
+    let cancelled = false;
+
+    const initializeSession = async () => {
+      await Promise.resolve();
+
+      if (cancelled) return;
+
+      await loadSession(() => !cancelled);
+    };
+
+    void initializeSession();
+
+    return () => {
+      cancelled = true;
+    };
   }, [loadSession]);
 
   const login = useCallback(async (payload: StaffLoginRequest) => {

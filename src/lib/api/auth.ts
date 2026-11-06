@@ -15,6 +15,8 @@ import type {
 export function startStudentSSO(): void {
   if (typeof window === "undefined") return;
 
+  // Redirect eksternal untuk memulai autentikasi SSO kampus.
+  // eslint-disable-next-line @next/next/no-location-assign-relative-destination
   window.location.assign(`${API_BASE_URL}/auth/sso/login`);
 }
 
