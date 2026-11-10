@@ -14,6 +14,6 @@ describe("GentaFab Component (SCRUM-204)", () => {
     render(<GentaFab />);
     const fabButton = screen.getByRole("button", { name: /tombol darurat genta/i });
     expect(fabButton).toBeDefined();
-    expect(fabButton.textContent).toContain("SOS Genta");
+    expect(fabButton.textContent).toContain("SOS Darurat");
   });
 });

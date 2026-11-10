@@ -24,7 +24,7 @@ describe("SET-02: Komponen Tombol Genta & Alur Darurat (SCRUM-204)", () => {
       render(<GentaFab />);
       const btn = screen.getByRole("button", { name: /tombol darurat genta/i });
       expect(btn).toBeDefined();
-      expect(btn.textContent).toContain("SOS Genta");
+      expect(btn.textContent).toContain("SOS Darurat");
     });
 
     it("has touch target size meeting or exceeding 56px", () => {
