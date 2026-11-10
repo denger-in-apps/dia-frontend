@@ -6,7 +6,6 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import {
   AlertCircle,
-  WifiOff,
   Shield,
   Calendar,
   MessageSquare,
@@ -16,6 +15,11 @@ import {
 } from "lucide-react";
 import { ThemeToggle } from "@/components/layout/ThemeToggle";
 import { useAuth } from "@/contexts/AuthContext";
+import {
+  SosRealtimeBanner,
+  SosRealtimeProvider,
+  SosRealtimeStatus,
+} from "@/components/genta/SosRealtimeProvider";
 
 export default function PsikologLayout({
   children,
@@ -26,7 +30,6 @@ export default function PsikologLayout({
   const router = useRouter();
   const { user, isLoading, signOut } = useAuth();
 
-  const [isSocketConnected] = useState(true);
   const [loggingOut, setLoggingOut] = useState(false);
   const [logoutError, setLogoutError] = useState("");
 
@@ -122,18 +125,9 @@ export default function PsikologLayout({
   ];
 
   return (
+    <SosRealtimeProvider>
     <div className="min-h-screen flex flex-col md:flex-row bg-bg text-text">
-      {/* Realtime disconnect banner */}
-      {!isSocketConnected && (
-        <div className="fixed top-0 inset-x-0 z-50 bg-danger text-white px-4 py-2 text-xs font-bold text-center flex items-center justify-center gap-2">
-          <WifiOff className="w-4 h-4 animate-pulse" />
-          <span>
-            PERINGATAN: Realtime terputus! Segera segarkan
-            halaman untuk memastikan antrean SOS tidak
-            tertinggal.
-          </span>
-        </div>
-      )}
+      <SosRealtimeBanner />
 
       {/* Sidebar */}
       <aside className="w-full md:w-64 bg-surface border-r border-black/5 dark:border-white/10 p-5 flex flex-col justify-between shrink-0">
@@ -160,13 +154,7 @@ export default function PsikologLayout({
             <ThemeToggle />
           </div>
 
-          {/* Realtime status */}
-          <div className="p-2.5 rounded-2xl bg-emerald-50 dark:bg-emerald-950/30 border border-emerald-200 text-emerald-800 dark:text-emerald-300 text-xs flex items-center gap-2">
-            <span className="w-2 h-2 rounded-full bg-emerald-500 animate-ping" />
-            <span className="font-semibold">
-              Socket SOS Terhubung
-            </span>
-          </div>
+          <SosRealtimeStatus />
 
           {/* Navigation */}
           <nav className="space-y-1">
@@ -232,5 +220,6 @@ export default function PsikologLayout({
         {children}
       </main>
     </div>
+    </SosRealtimeProvider>
   );
 }

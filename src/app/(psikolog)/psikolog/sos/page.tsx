@@ -1,23 +1,15 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { AlertTriangle, Clock, MapPin, CheckCircle2, UserCheck, RefreshCw, AlertCircle } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-
-interface SosCase {
-  id: string;
-  waktu: string;
-  kategori: string;
-  eskalasiDetik: number;
-  status: "BARU" | "DIAMBIL" | "TERHUBUNG";
-  lokasi?: { lat: number; lng: number };
-  catatan?: string;
-}
+import { useSosRealtime, type SosRealtimeCase } from "@/components/genta/SosRealtimeProvider";
 
 export default function PsikologSosDashboardPage() {
-  const [cases, setCases] = useState<SosCase[]>([
+  const { incomingCases } = useSosRealtime();
+  const [cases, setCases] = useState<SosRealtimeCase[]>([
     {
       id: "SOS-20261021-01",
       waktu: "10:31 WIB (2 menit lalu)",
@@ -38,6 +30,14 @@ export default function PsikologSosDashboardPage() {
 
   const [conflictMsg, setConflictMsg] = useState<string | null>(null);
 
+  useEffect(() => {
+    setCases((current) => {
+      const existingIds = new Set(current.map((item) => item.id));
+      const freshCases = incomingCases.filter((item) => !existingIds.has(item.id));
+      return freshCases.length ? [...freshCases, ...current] : current;
+    });
+  }, [incomingCases]);
+
   const handleAmbilKasus = (id: string) => {
     setConflictMsg(null);
     // Simulate race condition / 409 conflict test
@@ -46,7 +46,7 @@ export default function PsikologSosDashboardPage() {
       return;
     }
 
-    setCases(cases.map((c) => (c.id === id ? { ...c, status: "DIAMBIL" } : c)));
+    setCases((current) => current.map((c) => (c.id === id ? { ...c, status: "DIAMBIL" } : c)));
   };
 
   return (
@@ -136,7 +136,7 @@ export default function PsikologSosDashboardPage() {
                     </a>
                   </div>
                 ) : (
-                  <span className="text-text-muted italic">Mahasiswa memilih tidak membagikan lokasi fisik.</span>
+                  <span className="text-text-muted italic">Lokasi tidak tersedia untuk sinyal ini.</span>
                 )}
               </div>
             </div>

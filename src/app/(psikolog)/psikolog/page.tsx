@@ -1,9 +1,15 @@
+"use client";
+
 import Link from "next/link";
 import { AlertTriangle, Calendar, MessageSquare, Users, Clock } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { useSosRealtime } from "@/components/genta/SosRealtimeProvider";
 
 export default function PsikologDashboardPage() {
+  const { incomingCases } = useSosRealtime();
+  const newCasesCount = incomingCases.filter((item) => item.status === "BARU").length;
+
   return (
     <div className="max-w-5xl mx-auto space-y-6">
       <div className="space-y-1">
@@ -22,8 +28,16 @@ export default function PsikologDashboardPage() {
             <AlertTriangle className="w-6 h-6" />
           </div>
           <div>
-            <h2 className="text-base font-bold text-danger">1 Kasus Sinyal Darurat Baru Menunggu Penanganan</h2>
-            <p className="text-xs text-text-muted">Mahasiswa mengirim sinyal SOS 2 menit yang lalu • Perlu respons segera.</p>
+            <h2 className="text-base font-bold text-danger">
+              {newCasesCount > 0
+                ? `${newCasesCount} Kasus SOS Baru Diterima Sejak Halaman Dibuka`
+                : "Notifikasi SOS Real-Time Aktif"}
+            </h2>
+            <p className="text-xs text-text-muted">
+              {newCasesCount > 0
+                ? "Kasus baru sudah masuk ke antrean dan menunggu respons."
+                : "Kasus SOS baru akan muncul di sini saat diterima."}
+            </p>
           </div>
         </div>
         <Link href="/psikolog/sos">

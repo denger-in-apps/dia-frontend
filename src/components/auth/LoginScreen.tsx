@@ -1,12 +1,12 @@
 
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { AlertCircle, LogIn } from "lucide-react";
-import { Card } from "@/components/ui/card";
+import { AlertCircle, ArrowUpRight, GraduationCap, HeartHandshake, ShieldCheck } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { startStudentSSO } from "@/lib/api/auth";
+import { useAuth } from "@/contexts/AuthContext";
+import { GentaFab } from "@/components/genta/GentaFab";
 
 interface LoginScreenProps {
   error?: string | null;
@@ -59,13 +59,26 @@ function LoginIllustration() {
 
 export function LoginScreen({ error }: LoginScreenProps) {
   const router = useRouter();
+  const { user, isLoading } = useAuth();
   const [redirecting, setRedirecting] = useState(false);
+
+  useEffect(() => {
+    if (!user) return;
+
+    const destination = {
+      MAHASISWA: "/beranda",
+      PSIKOLOG: "/psikolog",
+      DOSEN_ADMIN: "/admin",
+    }[user.role];
+
+    router.replace(destination);
+  }, [user, router]);
 
   function handleStudentLogin() {
     if (redirecting) return;
 
     setRedirecting(true);
-    startStudentSSO();
+    router.push("/sso/login");
   }
 
   const errorMessages: Record<string, string> = {
@@ -84,85 +97,131 @@ export function LoginScreen({ error }: LoginScreenProps) {
     : null;
 
   return (
+    <>
     <main className="login-screen flex min-h-screen items-center justify-center p-4 sm:p-6">
-      <Card className="login-card w-full max-w-[520px] space-y-4 border-0 p-5 shadow-xl sm:p-8">
-        <LoginIllustration />
+      <div className="grid w-full max-w-5xl overflow-hidden rounded-[2rem] bg-surface shadow-2xl lg:grid-cols-[0.9fr_1.1fr]">
+        <section className="login-card flex flex-col justify-center p-7 sm:p-10 lg:p-12">
+          <div className="mb-8 inline-flex w-fit items-center gap-2 rounded-full border border-brand/10 bg-white/50 px-3 py-1.5 text-xs font-bold uppercase tracking-wider text-brand">
+            <HeartHandshake className="h-4 w-4" /> Ruang aman untuk bertumbuh
+          </div>
+          <LoginIllustration />
+          <div className="mt-4">
+            <div className="mb-2 font-serif text-xl font-semibold">Denger.in</div>
+            <h1 className="font-serif text-3xl leading-tight sm:text-4xl">
+              Di sini, kamu <em>didengar</em> sebelum semuanya terasa berat.
+            </h1>
+            <p className="mt-4 max-w-md text-sm leading-relaxed opacity-80">
+              Pilih jenis akun untuk masuk ke layanan yang sesuai dengan peranmu.
+            </p>
+          </div>
+        </section>
 
-        <div className="text-center">
-          <div className="mb-2 font-serif text-xl font-semibold">
-            Denger.in
+        <section className="p-6 sm:p-9 lg:p-10" aria-labelledby="login-title">
+          {isLoading || user ? (
+            <div className="flex min-h-80 items-center justify-center text-sm text-text-muted" role="status">
+              {user ? "Membuka halaman sesuai peran..." : "Memeriksa sesi..."}
+            </div>
+          ) : (
+            <>
+          <div className="mb-6">
+            <p className="text-xs font-bold uppercase tracking-[0.18em] text-brand/70">Selamat datang</p>
+            <h2 id="login-title" className="mt-1 font-serif text-2xl font-bold text-brand sm:text-3xl">
+              Masuk ke Denger.in
+            </h2>
+            <p className="mt-2 text-sm text-text-muted">Pilih peran akun yang akan kamu gunakan.</p>
           </div>
 
-          <h1 className="font-serif text-3xl leading-tight sm:text-4xl">
-            Di sini, kamu <em>didengar</em> sebelum semuanya
-            terasa berat.
-          </h1>
-
-          <p className="mt-3 text-sm opacity-80">
-            Masuk menggunakan akun SSO kampus untuk
-            mengakses layanan Denger.in.
-          </p>
-        </div>
-
-        {errorMessage && (
-          <div
-            role="alert"
-            className="flex items-center gap-2 rounded-2xl border border-danger/30 bg-danger/10 p-3 text-left text-sm text-danger"
-          >
-            <AlertCircle className="h-4 w-4 shrink-0" />
-            <span>{errorMessage}</span>
-          </div>
-        )}
-
-        <div className="space-y-2">
-          <Button
-            type="button"
-            onClick={handleStudentLogin}
-            disabled={redirecting}
-            variant="primary"
-            className="w-full"
-          >
-            <LogIn className="mr-2 h-4 w-4" />
-            {redirecting
-              ? "Menghubungkan ke SSO..."
-              : "Masuk sebagai Mahasiswa"}
-          </Button>
-
-          <p className="text-center text-xs opacity-70">
-            Kamu akan diarahkan ke halaman login SSO kampus.
-          </p>
-        </div>
-
-        <div className="border-t border-black/10 pt-4">
-          <p className="mb-3 text-center text-sm opacity-80">
-            Masuk sebagai staf Denger.in
-          </p>
-
-          <div className="flex flex-col gap-2 sm:flex-row">
-            <Button
-              type="button"
-              variant="outline"
-              className="w-full"
-              onClick={() => router.push("/staf/masuk")}
+          {errorMessage && (
+            <div
+              role="alert"
+              className="mb-5 flex items-center gap-2 rounded-2xl border border-danger/30 bg-danger/10 p-3 text-left text-sm text-danger"
             >
-              Psikolog
-            </Button>
+              <AlertCircle className="h-4 w-4 shrink-0" />
+              <span>{errorMessage}</span>
+            </div>
+          )}
 
-            <Button
-              type="button"
-              variant="outline"
-              className="w-full"
-              onClick={() => router.push("/staf/masuk")}
-            >
-              Dosen Admin
-            </Button>
+          <div className="space-y-3">
+            <article className="rounded-2xl border border-brand/15 bg-bg/60 p-4 sm:p-5">
+              <div className="flex items-start gap-3">
+                <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-accent-lime text-brand">
+                  <GraduationCap className="h-5 w-5" />
+                </span>
+                <div className="min-w-0 flex-1">
+                  <h3 className="font-bold text-brand">Mahasiswa</h3>
+                  <p className="mt-1 text-xs leading-relaxed text-text-muted">
+                    Gunakan akun SSO kampus untuk mengakses konseling dan dukungan mahasiswa.
+                  </p>
+                  <Button
+                    type="button"
+                    onClick={handleStudentLogin}
+                    disabled={redirecting}
+                    variant="primary"
+                    className="mt-4 w-full justify-between"
+                  >
+                    {redirecting ? "Menyiapkan SSO..." : "Masuk dengan SSO Kampus"}
+                    <ArrowUpRight className="h-4 w-4" />
+                  </Button>
+                </div>
+              </div>
+            </article>
+
+            <article className="rounded-2xl border border-black/10 p-4 sm:p-5">
+              <div className="flex items-start gap-3">
+                <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-accent-mint text-brand">
+                  <HeartHandshake className="h-5 w-5" />
+                </span>
+                <div className="min-w-0 flex-1">
+                  <h3 className="font-bold text-brand">Psikolog</h3>
+                  <p className="mt-1 text-xs leading-relaxed text-text-muted">
+                    Masuk ke portal untuk menangani SOS, sesi, dan pendampingan mahasiswa.
+                  </p>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    className="mt-4 w-full justify-between"
+                    onClick={() => router.push("/staf/masuk?role=PSIKOLOG")}
+                  >
+                    Masuk sebagai Psikolog
+                    <ArrowUpRight className="h-4 w-4" />
+                  </Button>
+                </div>
+              </div>
+            </article>
+
+            <article className="rounded-2xl border border-black/10 p-4 sm:p-5">
+              <div className="flex items-start gap-3">
+                <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-accent-lavender text-brand">
+                  <ShieldCheck className="h-5 w-5" />
+                </span>
+                <div className="min-w-0 flex-1">
+                  <h3 className="font-bold text-brand">Dosen Admin</h3>
+                  <p className="mt-1 text-xs leading-relaxed text-text-muted">
+                    Masuk ke portal administrasi untuk mengelola layanan dan konfigurasi kampus.
+                  </p>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    className="mt-4 w-full justify-between"
+                    onClick={() => router.push("/staf/masuk?role=DOSEN_ADMIN")}
+                  >
+                    Masuk sebagai Dosen Admin
+                    <ArrowUpRight className="h-4 w-4" />
+                  </Button>
+                </div>
+              </div>
+            </article>
           </div>
-        </div>
 
-        <p className="text-center text-xs opacity-70">
-          Denger.in — Ruang Aman Mahasiswa
-        </p>
-      </Card>
+          <p className="mt-6 text-center text-xs text-text-muted">
+            Denger.in — Ruang Aman Mahasiswa
+          </p>
+            </>
+          )}
+        </section>
+      </div>
     </main>
+    <GentaFab />
+    </>
   );
 }

@@ -1,8 +1,8 @@
 
 "use client";
 
-import { useState, type FormEvent } from "react";
-import { useRouter } from "next/navigation";
+import { Suspense, useEffect, useState, type FormEvent } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import { LogIn } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -54,8 +54,9 @@ function LoginIllustration() {
   );
 }
 
-export default function StafMasukPage() {
+function StafMasukContent() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const { login, user, isLoading } = useAuth();
 
   const [role, setRole] =
@@ -65,6 +66,13 @@ export default function StafMasukPage() {
   const [otp, setOtp] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState("");
+
+  useEffect(() => {
+    const requestedRole = searchParams.get("role");
+    if (requestedRole === "PSIKOLOG" || requestedRole === "DOSEN_ADMIN") {
+      setRole(requestedRole);
+    }
+  }, [searchParams]);
 
   async function handleLogin(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -254,5 +262,13 @@ export default function StafMasukPage() {
         </p>
       </Card>
     </main>
+  );
+}
+
+export default function StafMasukPage() {
+  return (
+    <Suspense fallback={<div className="p-6 text-center text-sm text-text-muted">Memuat tampilan login...</div>}>
+      <StafMasukContent />
+    </Suspense>
   );
 }

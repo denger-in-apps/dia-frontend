@@ -9,7 +9,7 @@ export function getSosSocket(): Socket {
     sosSocket = io(`${SOCKET_URL}/sos`, {
       withCredentials: true,
       autoConnect: false,
-      reconnectionAttempts: 5,
+      reconnectionAttempts: Infinity,
       reconnectionDelay: 1000,
     });
   }

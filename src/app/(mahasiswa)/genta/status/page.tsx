@@ -31,7 +31,7 @@ function GentaStatusContent() {
 
   const handleBatal = () => {
     setStatus("SELESAI");
-    router.push("/");
+    router.push("/beranda");
   };
 
   return (

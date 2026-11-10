@@ -1,36 +1,101 @@
 # Denger.in — Frontend
 
-Frontend aplikasi Denger.in untuk mendukung layanan kesehatan mental dan pendampingan mahasiswa. Aplikasi dibangun dengan Next.js App Router, React, TypeScript, dan Tailwind CSS.
+Denger.in adalah aplikasi web untuk layanan kesehatan mental dan pendampingan mahasiswa. Frontend menggunakan Next.js App Router, React, TypeScript, dan Tailwind CSS.
 
-## Menjalankan aplikasi
+## Menjalankan secara lokal
 
-Pastikan Node.js dan pnpm sudah tersedia, lalu jalankan:
+Pastikan Node.js yang didukung Next.js dan pnpm tersedia. Versi package manager proyek adalah pnpm 12.14.0.
 
 ```bash
 pnpm install
 pnpm dev
 ```
 
-Buka alamat yang ditampilkan oleh Next.js di terminal. URL backend dapat diatur melalui `NEXT_PUBLIC_API_URL`; jika tidak diatur, klien API menggunakan `http://localhost:3001`.
+Buka alamat yang muncul di terminal, biasanya [http://localhost:3000](http://localhost:3000). Rute `/` mengarahkan ke halaman `/masuk`.
 
-## Perubahan terbaru
+### Konfigurasi backend
 
-### Tombol SOS Genta
+Buat `.env.local` di root proyek bila backend tidak memakai alamat default:
 
-Tombol **SOS Darurat** tampil mengambang di area kanan bawah halaman mahasiswa. Saat ditekan, tombol membuka konfirmasi **Sinyal Darurat Genta** dengan pilihan kategori situasi, catatan opsional, dan panel persetujuan berbagi lokasi. Konfirmasi dapat ditutup dengan tombol tutup atau tombol Escape.
+```env
+NEXT_PUBLIC_API_URL=https://localhost/api/v1
+NEXT_PUBLIC_WS_URL=http://localhost:3001
+NEXT_PUBLIC_SOS_NEW_EVENT=sos:new
+```
 
-Persetujuan berbagi lokasi wajib dicentang dan direset setiap kali konfirmasi SOS dibuka; tombol kirim tidak aktif sebelum persetujuan diberikan. Setelah mahasiswa menyetujui dan menekan **Kirim Sinyal Bantuan Sekarang**, aplikasi meminta lokasi perangkat dengan batas waktu 5 detik dan menyertakan koordinat serta akurasi pada payload bila berhasil didapatkan. Jika izin ditolak, lokasi tidak tersedia, atau permintaan timeout, pengiriman tetap dilanjutkan tanpa koordinat agar sinyal SOS tidak tertahan. Konfirmasi juga menampilkan hotline 119 Ext. 8 dan Healing119.id.
+`NEXT_PUBLIC_API_URL` dan `NEXT_PUBLIC_WS_URL` adalah alamat publik yang dipakai browser. Nilai default API adalah `https://localhost/api/v1`; nilai default Socket.IO adalah `http://localhost:3001`. Sesuaikan dengan alamat backend yang sedang dijalankan. Restart `pnpm dev` setelah mengubah `.env.local`.
 
-**Status implementasi:** komponen pengiriman SOS saat ini masih berupa simulasi frontend; belum memanggil backend. Halaman status menerima ID simulasi. Panel persetujuan lokasi tampil di dalam konfirmasi SOS yang terbuka setelah tombol ditekan, sehingga alur pengiriman tetap maksimal dua ketukan.
+Frontend meminta endpoint sesi (`/auth/refresh` dan `/auth/me`) saat memuat status autentikasi. Jalankan backend pada alamat yang benar agar pemeriksaan sesi selesai.
 
-### Halaman akun dan privasi mahasiswa
+## Login prototipe
 
-Halaman `/akun` diperbarui agar mahasiswa dapat melihat informasi profil dalam satu tampilan, membuka mode ubah untuk nama dan kontak darurat, serta melihat bahwa NIM bersifat hanya-baca. Halaman juga menyediakan bagian salinan data dan opsi penghapusan dengan dialog informasi.
+- `/masuk` adalah halaman pilihan akun mahasiswa, psikolog, dan dosen admin. Tombol SOS Genta tersedia di halaman ini.
+- `/sso/login` menampilkan formulir username dan password SSO. Untuk prototipe, nilai apa pun yang diisi akan membawa pengguna ke `/beranda`; nilai input tidak dikirim atau disimpan.
+- Login psikolog dan dosen admin di `/staf/masuk` memakai API backend `/auth/staff/login`.
+- Prototipe login mahasiswa belum menjalankan autentikasi SSO sungguhan atau membuat sesi backend.
 
-**Status implementasi:** antarmuka prototipe. Belum ada integrasi backend untuk memuat atau menyimpan profil, mengekspor data, maupun menghapus data. Perubahan yang diketik hanya tersimpan sementara di state halaman dan tidak dikirim ke server. Dialog penghapusan secara eksplisit menyatakan bahwa tidak ada data yang dihapus.
+## Rute utama
 
-## Catatan fitur
+| Rute | Fungsi |
+|---|---|
+| `/masuk` | Pilihan jenis akun |
+| `/sso/login` | Formulir login mahasiswa simulasi |
+| `/staf/masuk` | Login psikolog atau dosen admin |
+| `/beranda` | Beranda mahasiswa |
+| `/cek-mandiri` | Kuesioner refleksi suasana hati |
+| `/curhat` | Curhat anonim |
+| `/circle` | Daftar Circle komunitas |
+| `/konseling` | Daftar dan pemesanan sesi konseling |
+| `/sumber-daya` | Direktori bantuan |
+| `/akun` | Profil dan privasi mahasiswa |
+| `/genta/status` | Status sinyal Genta |
+| `/psikolog` | Dashboard psikolog |
+| `/psikolog/sos` | Antrean sinyal darurat |
+| `/admin` | Dashboard dosen admin |
+| `/offline` | Informasi bantuan saat offline |
 
-- Autentikasi pada tampilan masuk masih berupa prototipe.
-- Beberapa halaman mahasiswa dan staf masih menggunakan data contoh.
-- Kontrak API frontend didefinisikan di `src/lib/api/schema.d.ts` dan kliennya di `src/lib/api/client.ts`.
+Navbar mahasiswa menghubungkan halaman utama, Cek Mandiri, Curhat, Circle, Konseling, Direktori Bantuan, dan Akun. Sidebar psikolog dan admin menyediakan navigasi sesuai peran.
+
+## Status fitur
+
+### Genta SOS
+
+Tombol Genta tersedia pada halaman mahasiswa, `/masuk`, dan `/sso/login`. Tombol membuka lembar konfirmasi yang berisi pilihan situasi, catatan opsional, persetujuan berbagi lokasi, serta tautan hotline 119 Ext. 8 dan Healing119.id. Jika izin lokasi ditolak atau permintaan lokasi timeout, alur tetap dapat mengirim tanpa koordinat.
+
+Pengiriman SOS dan halaman status masih berupa simulasi frontend. Belum ada permintaan ke backend untuk membuat kasus. Jawaban verifikasi niat di halaman status dan pembatalan juga belum disimpan ke backend.
+
+### Notifikasi SOS real-time
+
+Layout psikolog menyambung ke namespace Socket.IO `/sos`. Event default adalah `sos:new` dan bisa diganti melalui `NEXT_PUBLIC_SOS_NEW_EVENT`. Payload perlu memuat `id` atau `sosId`, dan dapat berisi kategori, waktu, catatan, eskalasi, status, serta lokasi. Toast kasus baru, hitungan antrean, dan status koneksi membutuhkan backend yang mengirim event sesuai kontrak tersebut.
+
+### Akun mahasiswa
+
+Halaman `/akun` memakai API backend untuk mengambil dan mengubah profil, mengelola kontak darurat, mengekspor data, dan meminta penghapusan akun. Fitur tersebut memerlukan backend yang aktif dan mendukung endpoint terkait.
+
+### Halaman lainnya
+
+Beberapa halaman mahasiswa, psikolog, dan admin masih memakai data contoh atau state lokal. Periksa status API sebelum menganggap perubahan pada halaman contoh sudah tersimpan di server.
+
+## Perintah proyek
+
+```bash
+pnpm dev          # Jalankan server pengembangan
+pnpm build        # Buat build produksi
+pnpm start        # Jalankan build produksi
+pnpm lint         # Jalankan ESLint
+pnpm test         # Jalankan tes Vitest
+pnpm test:e2e     # Jalankan tes Playwright
+pnpm api:generate # Buat tipe TypeScript dari OpenAPI lokal
+```
+
+Perintah `pnpm api:generate` mengambil skema dari `http://localhost:3001/api/docs-json` dan menulis hasilnya ke `src/lib/api/schema.d.ts`.
+
+## Struktur kode
+
+```text
+src/
+├── app/          # Rute Next.js untuk mahasiswa, psikolog, admin, dan publik
+├── components/   # Komponen UI, navigasi, autentikasi, dan Genta
+├── contexts/     # State sesi pengguna
+└── lib/          # Klien API, autentikasi, socket, dan utilitas
+```
