@@ -19,9 +19,9 @@ const serwist = new Serwist({
   runtimeCaching: [
     // Static assets
     {
-      matcher: ({ url }) => url.pathname.startsWith("/_next/static/") || url.pathname.endsWith(".png") || url.pathname.endsWith(".ico"),
+      matcher: ({ url }) => url.pathname.endsWith(".png") || url.pathname.endsWith(".ico"),
       handler: new CacheFirst({
-        cacheName: "static-assets",
+        cacheName: "static-assets-v2",
       }),
     },
     // Public offline and login pages

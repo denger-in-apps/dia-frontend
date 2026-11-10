@@ -1,8 +1,8 @@
 "use client";
 
-import { useTheme } from "next-themes";
-import { useSyncExternalStore } from "react";
+import { useContext, useSyncExternalStore } from "react";
 import { Moon, Sun } from "lucide-react";
+import { ThemeContext } from "@/components/providers/Providers";
 
 function useMounted() {
   return useSyncExternalStore(
@@ -13,7 +13,7 @@ function useMounted() {
 }
 
 export function ThemeToggle() {
-  const { resolvedTheme, setTheme } = useTheme();
+  const { resolvedTheme, setTheme } = useContext(ThemeContext);
   const mounted = useMounted();
 
   if (!mounted) {

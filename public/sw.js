@@ -1,7 +1,7 @@
 // Service Worker for Denger.in (PWA - SCRUM-204)
 // Privacy & Caching Rules from 03-frontend.md §5
 
-const CACHE_NAME_STATIC = "dengerin-static-v1";
+const CACHE_NAME_STATIC = "dengerin-static-v2";
 const CACHE_NAME_PAGES = "dengerin-pages-v1";
 
 const PRECACHE_ASSETS = [
@@ -69,7 +69,6 @@ self.addEventListener("fetch", (event) => {
 
   // A. Static Assets: Cache-first
   if (
-    url.pathname.startsWith("/_next/static/") ||
     url.pathname.endsWith(".png") ||
     url.pathname.endsWith(".svg") ||
     url.pathname.endsWith(".ico") ||
