@@ -15,6 +15,14 @@ Buka alamat yang ditampilkan oleh Next.js di terminal. URL backend dapat diatur 
 
 ## Perubahan terbaru
 
+### Tombol SOS Genta
+
+Tombol **SOS Darurat** tampil mengambang di area kanan bawah halaman mahasiswa. Saat ditekan, tombol membuka konfirmasi **Sinyal Darurat Genta** dengan pilihan kategori situasi, catatan opsional, dan opsi berbagi lokasi. Konfirmasi dapat ditutup dengan tombol tutup atau tombol Escape.
+
+Berbagi lokasi tidak aktif secara default. Jika mahasiswa mencentang opsi lokasi lalu menekan **Kirim Sinyal Bantuan Sekarang**, aplikasi meminta lokasi perangkat dengan batas waktu 5 detik dan menyertakan koordinat serta akurasi pada payload. Jika opsi tidak dicentang, izin ditolak, lokasi tidak tersedia, atau permintaan timeout, pengiriman tetap dilanjutkan tanpa lokasi. Konfirmasi juga menampilkan hotline 119 Ext. 8 dan Healing119.id.
+
+**Status implementasi:** komponen pengiriman SOS saat ini masih berupa simulasi frontend; belum memanggil backend. Halaman status menerima ID simulasi. Opsi lokasi berupa checkbox pada konfirmasi yang sama, belum berupa layar persetujuan khusus yang muncul segera setelah tombol SOS ditekan.
+
 ### Halaman akun dan privasi mahasiswa
 
 Halaman `/akun` diperbarui agar mahasiswa dapat melihat informasi profil dalam satu tampilan, membuka mode ubah untuk nama dan kontak darurat, serta melihat bahwa NIM bersifat hanya-baca. Halaman juga menyediakan bagian salinan data dan opsi penghapusan dengan dialog informasi.
