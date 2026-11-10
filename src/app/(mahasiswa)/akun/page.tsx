@@ -2,12 +2,14 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 import {
   ArrowDownToLine,
   Check,
   ChevronRight,
   CircleHelp,
   LockKeyhole,
+  LogOut,
   Pencil,
   ShieldCheck,
   Trash2,
@@ -28,13 +30,16 @@ import {
 import type { ProfilMahasiswa } from "@/lib/api/types";
 
 export default function AkunPage() {
-  const { user, isLoading: authLoading } = useAuth();
+  const router = useRouter();
+  const { user, isLoading: authLoading, signOut } = useAuth();
 
   const [profil, setProfil] = useState<ProfilMahasiswa | null>(null);
   const [namaTampilan, setNamaTampilan] = useState("");
   const [loadingProfil, setLoadingProfil] = useState(true);
   const [savingProfil, setSavingProfil] = useState(false);
   const [exportingData, setExportingData] = useState(false);
+  const [loggingOut, setLoggingOut] = useState(false);
+  const [logoutError, setLogoutError] = useState("");
 
   const [isEditing, setIsEditing] = useState(false);
   const [notice, setNotice] = useState("");
@@ -45,6 +50,23 @@ export default function AkunPage() {
   const [deleteError, setDeleteError] = useState("");
 
   const isMahasiswa = user?.role === "MAHASISWA";
+
+  async function handleLogout() {
+    if (loggingOut) return;
+
+    setLoggingOut(true);
+    setLogoutError("");
+
+    try {
+      await signOut();
+      router.replace("/masuk");
+      router.refresh();
+    } catch {
+      setLogoutError("Logout gagal. Silakan coba lagi.");
+    } finally {
+      setLoggingOut(false);
+    }
+  }
 
   useEffect(() => {
     if (authLoading || !isMahasiswa) return;
@@ -235,24 +257,40 @@ export default function AkunPage() {
             </p>
           </div>
 
-          <div className="flex items-center gap-3 self-start rounded-2xl border border-white/15 bg-white/10 px-4 py-3 sm:self-auto">
-            <div className="flex h-11 w-11 items-center justify-center rounded-full bg-accent-lime text-brand">
-              <UserRound className="h-5 w-5" />
+          <div className="flex flex-col gap-3 self-start sm:self-auto">
+            <div className="flex items-center gap-3 rounded-2xl border border-white/15 bg-white/10 px-4 py-3">
+              <div className="flex h-11 w-11 items-center justify-center rounded-full bg-accent-lime text-brand">
+                <UserRound className="h-5 w-5" />
+              </div>
+
+              <div>
+                <p className="text-sm font-bold">
+                  {isProfileLoading
+                    ? "Memuat..."
+                    : namaYangDitampilkan}
+                </p>
+                <p className="text-xs text-white/65">Mahasiswa</p>
+              </div>
             </div>
 
-            <div>
-              <p className="text-sm font-bold">
-                {isProfileLoading
-                  ? "Memuat..."
-                  : namaYangDitampilkan}
-              </p>
-              <p className="text-xs text-white/65">
-                Mahasiswa
-              </p>
-            </div>
+            <button
+              type="button"
+              onClick={handleLogout}
+              disabled={loggingOut || authLoading || !isMahasiswa}
+              className="inline-flex items-center justify-center gap-2 rounded-xl border border-white/25 px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-white/10 disabled:cursor-not-allowed disabled:opacity-50"
+            >
+              <LogOut className="h-4 w-4" />
+              {loggingOut ? "Keluar..." : "Logout"}
+            </button>
           </div>
         </div>
       </section>
+
+      {logoutError && (
+        <div role="alert" className="rounded-2xl border border-danger/20 bg-danger/5 px-4 py-3 text-sm text-danger">
+          {logoutError}
+        </div>
+      )}
 
       {/* Notification */}
       {notice && (
