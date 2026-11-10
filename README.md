@@ -31,7 +31,8 @@ Frontend meminta endpoint sesi (`/auth/refresh` dan `/auth/me`) saat memuat stat
 
 - `/masuk` adalah halaman pilihan akun mahasiswa, psikolog, dan dosen admin. Tombol SOS Genta tersedia di halaman ini.
 - `/sso/login` menampilkan formulir username dan password SSO. Untuk prototipe, nilai apa pun yang diisi akan membawa pengguna ke `/beranda`; nilai input tidak dikirim atau disimpan.
-- Login psikolog dan dosen admin di `/staf/masuk` memakai API backend `/auth/staff/login`.
+- Dalam mode development, formulir Psikolog di `/staf/masuk?role=PSIKOLOG` menerima input apa pun dan membuka dashboard dengan sesi demo. Sesi demo disimpan sebagai penanda sementara di `sessionStorage`, tanpa menyimpan username atau password.
+- Login dosen admin di `/staf/masuk` memakai API backend `/auth/staff/login`. Login psikolog juga memakai API tersebut saat build production.
 - Prototipe login mahasiswa belum menjalankan autentikasi SSO sungguhan atau membuat sesi backend.
 
 ## Rute utama

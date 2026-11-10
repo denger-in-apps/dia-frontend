@@ -57,7 +57,7 @@ function LoginIllustration() {
 function StafMasukContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const { login, user, isLoading } = useAuth();
+  const { login, loginDemoPsychologist, user, isLoading } = useAuth();
 
   const [role, setRole] =
     useState<StaffLoginRequest["role"]>("PSIKOLOG");
@@ -66,6 +66,7 @@ function StafMasukContent() {
   const [otp, setOtp] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState("");
+  const isPsychologist = role === "PSIKOLOG";
 
   useEffect(() => {
     const requestedRole = searchParams.get("role");
@@ -82,18 +83,26 @@ function StafMasukContent() {
     setSubmitting(true);
 
     try {
-      await login({
-        role,
-        email: email.trim(),
-        password,
-        ...(otp.trim() ? { otp: otp.trim() } : {}),
-      });
+      if (role === "PSIKOLOG" && process.env.NODE_ENV !== "production") {
+        await loginDemoPsychologist();
+      } else {
+        await login({
+          role,
+          email: email.trim(),
+          password,
+          ...(otp.trim() ? { otp: otp.trim() } : {}),
+        });
+      }
 
       router.replace(
         role === "PSIKOLOG" ? "/psikolog" : "/admin"
       );
     } catch {
-      setError("Login gagal. Periksa email, password, dan OTP.");
+      setError(
+        isPsychologist
+          ? "Login gagal. Periksa username dan password."
+          : "Login gagal. Periksa email, password, dan OTP."
+      );
     } finally {
       setSubmitting(false);
     }
@@ -117,12 +126,13 @@ function StafMasukContent() {
           </h1>
 
           <p className="mt-3 text-sm opacity-80">
-            Portal staf layanan konseling dan pendampingan mahasiswa.
-            Masuk menggunakan akun Psikolog atau Dosen Admin.
+            {isPsychologist
+              ? "Masuk ke portal psikolog menggunakan akun yang terdaftar."
+              : "Portal staf layanan konseling dan pendampingan mahasiswa."}
           </p>
         </div>
 
-        {isLoading ? (
+        {isLoading && !(isPsychologist && process.env.NODE_ENV !== "production") ? (
           <p className="py-4 text-center text-sm">
             Memeriksa sesi...
           </p>
@@ -148,7 +158,7 @@ function StafMasukContent() {
           </div>
         ) : (
           <form onSubmit={handleLogin} className="space-y-4">
-            <div>
+            {!isPsychologist && <div>
               <label
                 htmlFor="role"
                 className="text-sm font-medium"
@@ -169,22 +179,22 @@ function StafMasukContent() {
                 <option value="PSIKOLOG">Psikolog</option>
                 <option value="DOSEN_ADMIN">Dosen Admin</option>
               </select>
-            </div>
+            </div>}
 
             <div>
               <label
-                htmlFor="email"
+                htmlFor="staff-username"
                 className="text-sm font-medium"
               >
-                Email
+                {isPsychologist ? "Username" : "Email"}
               </label>
 
               <input
-                id="email"
-                type="email"
+                id="staff-username"
+                type={isPsychologist ? "text" : "email"}
                 required
                 autoComplete="username"
-                placeholder="email@kampus.ac.id"
+                placeholder={isPsychologist ? "Username psikolog" : "email@kampus.ac.id"}
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 className={inputStyle}
@@ -210,7 +220,7 @@ function StafMasukContent() {
               />
             </div>
 
-            <div>
+            {!isPsychologist && <div>
               <label
                 htmlFor="otp"
                 className="text-sm font-medium"
@@ -228,7 +238,7 @@ function StafMasukContent() {
                 onChange={(e) => setOtp(e.target.value)}
                 className={inputStyle}
               />
-            </div>
+            </div>}
 
             {error && (
               <p role="alert" className="text-sm text-danger">

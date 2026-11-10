@@ -178,7 +178,7 @@ export function LoginScreen({ error }: LoginScreenProps) {
                   </p>
                   <Button
                     type="button"
-                    variant="outline"
+                    variant="primary"
                     className="mt-4 w-full justify-between"
                     onClick={() => router.push("/staf/masuk?role=PSIKOLOG")}
                   >
