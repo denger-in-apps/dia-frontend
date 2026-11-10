@@ -1,48 +1,16 @@
-import { NextResponse } from "next/server";
+﻿import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 
-export function middleware(request: NextRequest) {
-  const { pathname } = request.nextUrl;
-  const userRole = request.cookies.get("dia_role")?.value; // "mahasiswa" | "psikolog" | "admin"
-  const sessionToken = request.cookies.get("dia_session")?.value;
-
-  // Protected paths
-  const isPsikologRoute = pathname.startsWith("/psikolog");
-  const isAdminRoute = pathname.startsWith("/admin");
-  const isMahasiswaRoute =
-    pathname.startsWith("/konseling") ||
-    pathname.startsWith("/cek-mandiri") ||
-    pathname.startsWith("/curhat") ||
-    pathname.startsWith("/circle") ||
-    pathname.startsWith("/sumber-daya") ||
-    pathname.startsWith("/genta") ||
-    pathname.startsWith("/akun");
-
-  // Admin access gate
-  if (isAdminRoute) {
-    if (!sessionToken || userRole !== "admin") {
-      const loginUrl = new URL("/staf/masuk", request.url);
-      loginUrl.searchParams.set("from", pathname);
-      return NextResponse.redirect(loginUrl);
-    }
-  }
-
-  // Psychologist access gate
-  if (isPsikologRoute) {
-    if (!sessionToken || (userRole !== "psikolog" && userRole !== "admin")) {
-      const loginUrl = new URL("/staf/masuk", request.url);
-      loginUrl.searchParams.set("from", pathname);
-      return NextResponse.redirect(loginUrl);
-    }
-  }
-
-  // Student access gate (if protected subpaths)
-  if (isMahasiswaRoute && !sessionToken && process.env.NODE_ENV === "production") {
-    const loginUrl = new URL("/masuk", request.url);
-    loginUrl.searchParams.set("from", pathname);
-    return NextResponse.redirect(loginUrl);
-  }
-
+/**
+ * Middleware Denger.in
+ *
+ * Autentikasi menggunakan JWT dan HttpOnly refresh token.
+ * Cookie legacy dia_session dan dia_role tidak digunakan.
+ *
+ * Middleware ini tidak melakukan autentikasi server-side.
+ * Backend wajib memvalidasi JWT dan role pada endpoint API.
+ */
+export function middleware(_request: NextRequest) {
   return NextResponse.next();
 }
 
