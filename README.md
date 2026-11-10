@@ -31,7 +31,7 @@ Frontend meminta endpoint sesi (`/auth/refresh` dan `/auth/me`) saat memuat stat
 
 - `/masuk` adalah halaman pilihan akun mahasiswa, psikolog, dan dosen admin. Tombol SOS Genta tersedia di halaman ini.
 - `/sso/login` menampilkan formulir username dan password SSO. Untuk prototipe, nilai apa pun yang diisi akan membawa pengguna ke `/beranda`; nilai input tidak dikirim atau disimpan.
-- Dalam mode development, formulir Psikolog di `/staf/masuk?role=PSIKOLOG` menerima input apa pun dan membuka dashboard dengan sesi demo. Sesi demo disimpan sebagai penanda sementara di `sessionStorage`, tanpa menyimpan username atau password.
+- Dalam mode development, formulir Psikolog di `/staf/masuk?role=PSIKOLOG` meminta username dan password, lalu menerima input apa pun dan membuka dashboard dengan sesi demo. Sesi demo disimpan sebagai penanda sementara di `sessionStorage`, tanpa menyimpan username atau password.
 - Login dosen admin di `/staf/masuk` memakai API backend `/auth/staff/login`. Login psikolog juga memakai API tersebut saat build production.
 - Prototipe login mahasiswa belum menjalankan autentikasi SSO sungguhan atau membuat sesi backend.
 
@@ -56,6 +56,10 @@ Frontend meminta endpoint sesi (`/auth/refresh` dan `/auth/me`) saat memuat stat
 | `/offline` | Informasi bantuan saat offline |
 
 Navbar mahasiswa menghubungkan halaman utama, Cek Mandiri, Curhat, Circle, Konseling, Direktori Bantuan, dan Akun. Sidebar psikolog dan admin menyediakan navigasi sesuai peran.
+
+## Dashboard psikolog
+
+Dashboard `/psikolog` menampilkan sapaan pengguna, status koneksi SOS real-time, ringkasan kasus baru, dan tautan cepat ke antrean SOS, jadwal sesi, Curhat Anonim, serta Circle. Angka sesi, utas, dan Circle masih berupa data contoh; indikator kasus baru dihitung dari event SOS yang diterima selama aplikasi berjalan.
 
 ## Status fitur
 
