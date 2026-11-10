@@ -31,6 +31,12 @@ export function GentaConfirmSheet({ isOpen, onClose, apiClientOverride }: GentaC
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [isOpen, onClose]);
 
+  useEffect(() => {
+    if (isOpen) {
+      setShareLocation(false);
+    }
+  }, [isOpen]);
+
   if (!isOpen) return null;
 
   async function handleSendSignal() {
@@ -144,6 +150,7 @@ export function GentaConfirmSheet({ isOpen, onClose, apiClientOverride }: GentaC
               </a>
               <Button
                 onClick={handleSendSignal}
+                disabled={isSubmitting || !shareLocation}
                 variant="outline"
                 size="sm"
                 className="text-xs flex items-center gap-1"
@@ -187,21 +194,43 @@ export function GentaConfirmSheet({ isOpen, onClose, apiClientOverride }: GentaC
             />
           </div>
 
-          {/* FR-MHS-04: Location Permission Toggle */}
-          <div className="pt-2">
-            <label className="flex items-center gap-2 cursor-pointer text-xs sm:text-sm select-none">
-              <input
-                type="checkbox"
-                checked={shareLocation}
-                onChange={(e) => setShareLocation(e.target.checked)}
-                className="rounded border-black/20 text-danger focus:ring-danger w-4 h-4 cursor-pointer"
-              />
-              <span className="flex items-center gap-1.5">
-                <MapPin className="w-4 h-4 text-brand shrink-0" />
-                <span>Bagikan lokasiku untuk mempercepat evakuasi / bantuan</span>
-              </span>
-            </label>
-          </div>
+          {/* FR-MHS-04: Explicit, optional location consent */}
+          <section
+            className="mt-2 rounded-2xl border border-brand/20 bg-brand/5 p-4"
+            aria-labelledby="location-consent-title"
+          >
+            <div className="flex items-start gap-3">
+              <MapPin className="mt-0.5 h-5 w-5 shrink-0 text-brand" aria-hidden="true" />
+              <div className="space-y-2">
+                <h3 id="location-consent-title" className="text-sm font-bold text-brand">
+                  Persetujuan berbagi lokasi (wajib)
+                </h3>
+                <p className="text-xs leading-relaxed text-text-muted">
+                  Setujui berbagi lokasi untuk mengaktifkan pengiriman sinyal SOS. Lokasi perangkat akan disertakan
+                  bersama sinyal untuk membantu proses penanganan.
+                </p>
+                <label className="flex cursor-pointer select-none items-start gap-2 text-xs sm:text-sm">
+                  <input
+                    type="checkbox"
+                    required
+                    checked={shareLocation}
+                    onChange={(e) => setShareLocation(e.target.checked)}
+                    className="mt-0.5 h-4 w-4 cursor-pointer rounded border-black/20 text-danger focus:ring-danger"
+                  />
+                  <span className="font-semibold">Saya setuju membagikan lokasi perangkat saya (wajib)</span>
+                </label>
+                <p className="text-[11px] leading-relaxed text-text-muted">
+                  Permintaan izin lokasi dari browser hanya muncul setelah kamu menekan tombol kirim. Jika browser
+                  menolak atau gagal mendapatkan lokasi, sinyal SOS tetap dikirim tanpa koordinat.
+                </p>
+                {!shareLocation && (
+                  <p className="text-xs font-semibold text-danger" role="status">
+                    Centang persetujuan untuk mengaktifkan tombol kirim SOS.
+                  </p>
+                )}
+              </div>
+            </div>
+          </section>
         </div>
 
         {/* Actions (Max 2-tap guarantee) */}
@@ -209,7 +238,7 @@ export function GentaConfirmSheet({ isOpen, onClose, apiClientOverride }: GentaC
           {/* Main 2-tap Action Button - Active immediately without selection! */}
           <Button
             onClick={handleSendSignal}
-            disabled={isSubmitting}
+            disabled={isSubmitting || !shareLocation}
             variant="danger"
             size="lg"
             className="w-full text-sm sm:text-base font-bold shadow-xl py-3.5 tracking-wide uppercase"
