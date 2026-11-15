@@ -20,7 +20,7 @@ Buat `.env.local` di root proyek bila backend tidak memakai alamat default:
 ```env
 NEXT_PUBLIC_API_URL=https://localhost/api/v1
 NEXT_PUBLIC_WS_URL=http://localhost:3001
-NEXT_PUBLIC_SOS_NEW_EVENT=sos:new
+NEXT_PUBLIC_SOS_NEW_EVENT=sos:baru
 ```
 
 `NEXT_PUBLIC_API_URL` dan `NEXT_PUBLIC_WS_URL` adalah alamat publik yang dipakai browser. Nilai default API adalah `https://localhost/api/v1`; nilai default Socket.IO adalah `http://localhost:3001`. Sesuaikan dengan alamat backend yang sedang dijalankan. Restart `pnpm dev` setelah mengubah `.env.local`.
@@ -71,7 +71,7 @@ Pengiriman SOS dan halaman status masih berupa simulasi frontend. Belum ada perm
 
 ### Notifikasi SOS real-time
 
-Layout psikolog menyambung ke namespace Socket.IO `/sos`. Event default adalah `sos:new` dan bisa diganti melalui `NEXT_PUBLIC_SOS_NEW_EVENT`. Payload perlu memuat `id` atau `sosId`, dan dapat berisi kategori, waktu, catatan, eskalasi, status, serta lokasi. Toast kasus baru, hitungan antrean, dan status koneksi membutuhkan backend yang mengirim event sesuai kontrak tersebut.
+Layout psikolog menyambung ke namespace Socket.IO `/psikolog` dan mengirim access token sesi saat handshake. Event default adalah `sos:baru` dan bisa diganti melalui `NEXT_PUBLIC_SOS_NEW_EVENT`. Payload perlu memuat `id` atau `sosId`, dan dapat berisi kategori, waktu, catatan, eskalasi, status, serta lokasi. Toast kasus baru, hitungan antrean, dan status koneksi membutuhkan backend yang mengirim event sesuai kontrak tersebut.
 
 ### Akun mahasiswa
 
