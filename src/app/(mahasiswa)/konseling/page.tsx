@@ -1,30 +1,14 @@
 "use client";
 
 import Link from "next/link";
-import { CalendarHeart, Plus, Clock, MessageSquare, Video, ArrowRight, ShieldCheck } from "lucide-react";
+import { Plus, Clock, MessageSquare, ShieldCheck } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { useSesiKonseling } from "./SesiKonselingContext";
 
 export default function KonselingListPage() {
-  const sessions = [
-    {
-      id: "sesi-101",
-      psikolog: "Dr. Sarah Wijaya, M.Psi.",
-      jadwal: "Kamis, 24 Oktober 2026 • 14:00 WIB",
-      tipe: "Chat E2EE",
-      status: "TERKONFIRMASI",
-      ruangTersedia: true,
-    },
-    {
-      id: "sesi-98",
-      psikolog: "Budi Santoso, M.Psi., Psikolog",
-      jadwal: "12 Oktober 2026 • 10:00 WIB",
-      tipe: "Tatap Muka",
-      status: "SELESAI",
-      ruangTersedia: false,
-    },
-  ];
+  const { sessions } = useSesiKonseling();
 
   return (
     <div className="max-w-4xl mx-auto py-6 space-y-6">
@@ -49,8 +33,8 @@ export default function KonselingListPage() {
           <Card key={sesi.id} className="p-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <div className="space-y-2">
               <div className="flex items-center gap-2">
-                <Badge variant={sesi.status === "TERKONFIRMASI" ? "mint" : "outline"}>
-                  {sesi.status}
+                <Badge variant={sesi.status === "TERKONFIRMASI" ? "mint" : sesi.status === "DIBATALKAN" ? "danger" : "outline"}>
+                  {sesi.status === "DIBATALKAN" ? "Dibatalkan" : sesi.status}
                 </Badge>
                 <span className="text-xs text-text-muted flex items-center gap-1">
                   <Clock className="w-3.5 h-3.5" /> {sesi.jadwal}
@@ -74,7 +58,7 @@ export default function KonselingListPage() {
                   Detail / Jadwal
                 </Button>
               </Link>
-              {sesi.ruangTersedia && (
+              {sesi.ruangTersedia && sesi.status === "TERKONFIRMASI" && (
                 <Link href={`/konseling/${sesi.id}/ruang`}>
                   <Button variant="primary" size="sm" className="flex items-center gap-1">
                     <MessageSquare className="w-4 h-4" /> Masuk Ruang Sesi

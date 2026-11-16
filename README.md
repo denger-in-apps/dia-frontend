@@ -52,6 +52,7 @@ Frontend meminta endpoint sesi (`/auth/refresh` dan `/auth/me`) saat memuat stat
 | `/genta/status` | Status sinyal Genta |
 | `/psikolog` | Dashboard psikolog |
 | `/psikolog/sos` | Antrean sinyal darurat |
+| `/psikolog/sesi` | Jadwal, ringkasan, dan riwayat sesi konseling |
 | `/admin` | Dashboard dosen admin |
 | `/offline` | Informasi bantuan saat offline |
 
@@ -60,6 +61,12 @@ Navbar mahasiswa menghubungkan halaman utama, Cek Mandiri, Curhat, Circle, Konse
 ## Dashboard psikolog
 
 Dashboard `/psikolog` menampilkan sapaan pengguna, status koneksi SOS real-time, ringkasan kasus baru, dan tautan cepat ke antrean SOS, jadwal sesi, Curhat Anonim, serta Circle. Angka sesi, utas, dan Circle masih berupa data contoh; indikator kasus baru dihitung dari event SOS yang diterima selama aplikasi berjalan.
+
+### Jadwal dan riwayat sesi psikolog
+
+Halaman `/psikolog/sesi` menyediakan daftar sesi yang dapat dicari berdasarkan nama atau ID mahasiswa. Pilih sesi untuk melihat detail, status persetujuan pencatatan ringkasan, formulir ringkasan, dan riwayat pendampingan mahasiswa tersebut. Ringkasan hanya dapat disimpan untuk sesi berstatus **Selesai** saat persetujuan aktif. Catatan berisi fokus pembahasan, perkembangan yang diamati, dan tindak lanjut yang disepakati.
+
+Fitur ini masih berupa prototipe frontend: daftar sesi dan contoh riwayat menggunakan data statis, sedangkan persetujuan dan ringkasan baru disimpan di state halaman. Status persetujuan juga menyediakan tombol simulasi untuk mencoba kondisi setuju dan pencabutan. Data tidak dikirim ke backend dan akan hilang saat halaman dimuat ulang. Integrasi nyata memerlukan sumber data sesi, penyimpanan catatan, dan status consent dari backend.
 
 ## Status fitur
 
