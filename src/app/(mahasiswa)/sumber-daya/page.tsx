@@ -1,64 +1,24 @@
 "use client";
 
-import { useState } from "react";
-import { BookOpen, Phone, ExternalLink, Search, Filter } from "lucide-react";
+import { useMemo, useState } from "react";
+import { Phone, ExternalLink, Search, LifeBuoy } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-
-interface ResourceItem {
-  id: string;
-  nama: string;
-  kategori: string;
-  deskripsi: string;
-  telepon?: string;
-  tautan?: string;
-}
+import { useSumberDaya } from "@/lib/sumber-daya";
 
 export default function SumberDayaPage() {
   const [filter, setFilter] = useState("Semua");
   const [query, setQuery] = useState("");
-
-  const resources: ResourceItem[] = [
-    {
-      id: "1",
-      nama: "Hotline Krisis Kemenkes RI (119 Ext. 8)",
-      kategori: "Krisis Darurat",
-      deskripsi: "Layanan pencegahan bunuh diri dan penanganan krisis mental gratis 24 jam.",
-      telepon: "119,8",
-      tautan: "https://healing119.id",
-    },
-    {
-      id: "2",
-      nama: "Pusat Bantuan Konseling Mahasiswa Kampus",
-      kategori: "Layanan Kampus",
-      deskripsi: "Kantor Bimbingan Konseling dan Pendampingan Psikologis Mahasiswa.",
-      telepon: "081234567890",
-    },
-    {
-      id: "3",
-      nama: "Yayasan Pulih (Trauma Recovery)",
-      kategori: "Eksternal / LSM",
-      deskripsi: "Konseling pemulihan trauma psikologis dan kekerasan berbasis gender.",
-      telepon: "02178842580",
-      tautan: "https://yayasanpulih.org",
-    },
-    {
-      id: "4",
-      nama: "Buku Panduan Pertolongan Pertama Emosional",
-      kategori: "Edukasi & Mandiri",
-      deskripsi: "Panduan praktis latihan pernapasan (box breathing) dan grounding 5-4-3-2-1 saat serangan panik.",
-      tautan: "#",
-    },
-  ];
+  const { items: resources } = useSumberDaya();
 
   const categories = ["Semua", "Krisis Darurat", "Layanan Kampus", "Eksternal / LSM", "Edukasi & Mandiri"];
 
-  const filtered = resources.filter((item) => {
+  const filtered = useMemo(() => resources.filter((item) => {
     const matchCategory = filter === "Semua" || item.kategori === filter;
-    const matchQuery = item.nama.toLowerCase().includes(query.toLowerCase()) ||
-                       item.deskripsi.toLowerCase().includes(query.toLowerCase());
+    const normalizedQuery = query.toLowerCase();
+    const matchQuery = `${item.nama} ${item.deskripsi} ${item.kategori} ${item.telepon ?? ""}`.toLowerCase().includes(normalizedQuery);
     return matchCategory && matchQuery;
-  });
+  }), [resources, filter, query]);
 
   return (
     <div className="max-w-4xl mx-auto py-6 space-y-6">
@@ -69,6 +29,11 @@ export default function SumberDayaPage() {
         <p className="text-sm text-text-muted">
           Daftar kontak krisis, organisasi dukungan mental, dan materi edukasi yang dapat diakses kapan saja (termasuk saat offline).
         </p>
+      </div>
+
+      <div className="flex items-start gap-3 rounded-2xl border border-amber-300 bg-amber-50 dark:bg-amber-950/20 p-4 text-xs">
+        <LifeBuoy className="mt-0.5 h-5 w-5 shrink-0 text-amber-700" />
+        <p className="text-text-muted"><strong className="text-text">Butuh bantuan segera?</strong> Hubungi layanan krisis atau layanan darurat setempat. Direktori ini bukan pengganti pertolongan darurat.</p>
       </div>
 
       <div className="flex flex-col sm:flex-row gap-3">
@@ -100,6 +65,7 @@ export default function SumberDayaPage() {
         </div>
       </div>
 
+      <p className="text-xs text-text-muted" aria-live="polite">Menampilkan {filtered.length} dari {resources.length} sumber daya</p>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         {filtered.map((item) => (
           <Card key={item.id} className="p-6 flex flex-col justify-between space-y-4">
@@ -117,7 +83,7 @@ export default function SumberDayaPage() {
                   href={`tel:${item.telepon}`}
                   className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-brand text-white rounded-full text-xs font-bold hover:opacity-90 transition-opacity"
                 >
-                  <Phone className="w-3.5 h-3.5" /> Telepon ({item.telepon})
+                  <Phone className="w-3.5 h-3.5" /> Telepon {item.telepon}
                 </a>
               )}
               {item.tautan && (
@@ -133,6 +99,9 @@ export default function SumberDayaPage() {
             </div>
           </Card>
         ))}
+        {filtered.length === 0 && (
+          <Card className="md:col-span-2 p-8 text-center text-sm text-text-muted">Tidak ada kontak yang cocok. Coba kata kunci atau kategori lain.</Card>
+        )}
       </div>
     </div>
   );

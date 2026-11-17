@@ -53,6 +53,8 @@ Frontend meminta endpoint sesi (`/auth/refresh` dan `/auth/me`) saat memuat stat
 | `/psikolog` | Dashboard psikolog |
 | `/psikolog/sos` | Antrean sinyal darurat |
 | `/psikolog/sesi` | Jadwal, ringkasan, dan riwayat sesi konseling |
+| `/psikolog/sumber-daya` | Direktori layanan bantuan dan rujukan |
+| `/admin/sumber-daya` | Pengelolaan kontak dan sumber daya bantuan |
 | `/admin` | Dashboard dosen admin |
 | `/offline` | Informasi bantuan saat offline |
 
@@ -83,6 +85,12 @@ Layout psikolog menyambung ke namespace Socket.IO `/psikolog` dan mengirim acces
 ### Akun mahasiswa
 
 Halaman `/akun` memakai API backend untuk mengambil dan mengubah profil, mengelola kontak darurat, mengekspor data, dan meminta penghapusan akun. Fitur tersebut memerlukan backend yang aktif dan mendukung endpoint terkait.
+
+### Direktori layanan bantuan
+
+Halaman `/sumber-daya` untuk mahasiswa dan `/psikolog/sumber-daya` untuk psikolog menampilkan kontak layanan berdasarkan kategori. Pengguna dapat mencari layanan dan memakai tombol telepon atau membuka tautan terkait. Admin mengelola daftar melalui `/admin/sumber-daya`, dengan fitur tambah, ubah, cari, dan hapus kontak.
+
+Direktori ini masih menggunakan data demo frontend. Perubahan admin disimpan di `localStorage` browser dan dapat dibaca oleh halaman mahasiswa serta psikolog pada browser/origin yang sama. Data belum disinkronkan ke server atau pengguna lain. Pastikan kontak darurat dan informasi rujukan diverifikasi sebelum direktori digunakan secara nyata.
 
 ### Halaman lainnya
 
